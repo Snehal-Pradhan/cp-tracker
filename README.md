@@ -9,6 +9,10 @@
 A terminal UI dashboard that tracks your competitive programming journey across
 **Codeforces**, **LeetCode** and **CodeChef**.
 
+<p align="center">
+  <img src="screenshot-tui.png" alt="CP Tracker terminal dashboard" width="90%">
+</p>
+
 </div>
 
 ## Features
