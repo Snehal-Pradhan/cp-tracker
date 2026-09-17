@@ -2,11 +2,13 @@ import asyncio
 import sys
 from datetime import datetime, timedelta, timezone
 
-sys.path.insert(0, "/Users/sp/Desktop/cp")
+sys.path.insert(0, ".")
 
 import cp_tracker.network as network
 from cp_tracker import config
 from cp_tracker.models import Contest, ContestResult, RatingPoint, UserStats
+from cp_tracker.tui.app import CPApp
+from cp_tracker.tui.screens import Dashboard, PlatformScreen, SetupModal
 
 config.save_config({"codeforces": "tourist", "leetcode": "wangzi6147",
                     "codechef": "gennady.korotkevich"})
@@ -45,11 +47,6 @@ network.refresh_contests = lambda: [
     Contest("LeetCode", "Weekly 1", now + timedelta(days=1), 90, "http://y", "2"),
     Contest("CodeChef", "Starters", now + timedelta(days=3), 180, "http://z", "3"),
 ]
-
-from cp_tracker.tui.app import CPApp
-from cp_tracker.tui.screens import Dashboard, PlatformScreen, SetupModal
-from cp_tracker.tui.widgets import PlatformCard
-
 
 async def main():
     app = CPApp()
