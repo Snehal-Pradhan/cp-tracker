@@ -37,6 +37,13 @@ $footer-foreground: #7f8691;
 $footer-key-foreground: #c9cdd4;
 $footer-key-background: #2a2f38;
 $footer-description-foreground: #7f8691;
+$scrollbar: #4a525c;
+$scrollbar-hover: #59616d;
+$scrollbar-active: #59616d;
+$scrollbar-background: #1a1d22;
+$scrollbar-background-hover: #1a1d22;
+$scrollbar-background-active: #1a1d22;
+$scrollbar-corner-color: transparent;
 
 Screen {
     background: $surface;
