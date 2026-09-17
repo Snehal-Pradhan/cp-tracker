@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cp-tracker"
+version = "0.1.0"
+description = "TUI dashboard for tracking your competitive programming journey (Codeforces, LeetCode, CodeChef)"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "textual>=2.0",
+    "requests>=2.28",
+]
+
+[project.scripts]
+cp-tracker = "cp_tracker.tui.app:main"
+
+[tool.setuptools.packages.find]
+include = ["cp_tracker*"]
