@@ -173,11 +173,11 @@ Screen {
 }
 
 Sparkline > .sparkline--max-color {
-    color: #0178d4;
+    color: #aab0b6;
 }
 
 Sparkline > .sparkline--min-color {
-    color: #0178d4 40%;
+    color: #39404a;
 }
 
 .chips {
