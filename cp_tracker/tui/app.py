@@ -135,6 +135,12 @@ Screen {
     color: $accent;
 }
 
+.star-meter {
+    height: 3;
+    content-align: left middle;
+    display: none;
+}
+
 .chips {
     height: 1;
     color: $text-muted;

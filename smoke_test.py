@@ -36,8 +36,9 @@ res = [ContestResult(now - timedelta(days=d), f"Round {i}",
 NETWORK = {
     "codeforces": make_stats("Codeforces", 2100, "Candidate Master", 30, h, res),
     "leetcode": make_stats("LeetCode", 1800, "Top 2%", 25, h, res),
-    "codechef": make_stats("CodeChef", 1750, "\u2605\u2605\u2605", 18, h, res),
+    "codechef": make_stats("CodeChef", 1750, "\u2605\u2605\u2605", None, [], []),
 }
+NETWORK["codechef"].extra["stars"] = 3
 network.refresh_stats = lambda: NETWORK
 network.refresh_contests = lambda: [
     Contest("Codeforces", "CF Round", now + timedelta(days=2), 150, "http://x", "1"),

@@ -15,7 +15,7 @@ from textual.widgets import (Button, DataTable, Footer, Header, Input,
 from .. import config
 from ..models import Contest, Store, UserStats
 from .format import (PLATFORM_COLORS, dur_mins, fmt_time, in_when)
-from .widgets import PlatformCard, StatTile
+from .widgets import PlatformCard, StatTile, stars_text
 
 PLATFORM_ORDER = ["codeforces", "leetcode", "codechef"]
 
@@ -225,6 +225,9 @@ class PlatformScreen(Screen):
             str(stats.max_rating) if stats.max_rating is not None else "—")
         rank = stats.rank or (f"#{stats.global_rank:,}"
                               if stats.global_rank else "—")
+        if self.key == "codechef":
+            stars = stats.extra.get("stars") or 0
+            rank = stars_text(stars) if stars else "—"
         self.tiles["rank"].set_value(rank)
         self.tiles["attended"].set_value(
             str(stats.contests_attended) if stats.contests_attended

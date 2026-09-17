@@ -36,6 +36,18 @@ def rating_hex(rating):
     return "#9ca3af"
 
 
+STAR_HEX = "#f5b301"
+MAX_STARS = 7
+
+
+def stars_text(count: int | None) -> str:
+    """Render a CodeChef star meter: filled gold stars + dim empty slots."""
+    count = int(count or 0)
+    total = max(count, MAX_STARS)
+    return (f"[bold {STAR_HEX}]" + "\u2605" * count + "[/]"
+            f"[dim]" + "\u2606" * (total - count) + "[/]")
+
+
 class PlatformCard(Vertical, can_focus=True):
     """A focusable summary card for one platform."""
 
@@ -60,7 +72,16 @@ class PlatformCard(Vertical, can_focus=True):
                 yield Static("", classes="caption", id=f"cap-{self.key}")
                 yield Static("", classes="rank", id=f"rank-{self.key}")
         yield Sparkline([], classes="card-spark", id=f"spark-{self.key}")
+        yield Static("", classes="star-meter", id=f"starmeter-{self.key}")
         yield Static("", classes="chips", id=f"chips-{self.key}")
+
+    def _show_chart(self, use_meter: bool, meter_text: str = ""):
+        spark = self.query_one(f"#spark-{self.key}", Sparkline)
+        meter = self.query_one(f"#starmeter-{self.key}", Static)
+        spark.display = not use_meter
+        meter.display = use_meter
+        if use_meter:
+            meter.update(meter_text)
 
     def render_content(self):
         stats = self.stats
@@ -106,12 +127,23 @@ class PlatformCard(Vertical, can_focus=True):
             chips.append(f"[dim]contests[/] {stats.contests_attended}")
         if stats.top_percentage is not None:
             chips.append(f"[dim]top[/] {stats.top_percentage:g}%")
-        if chips:
-            self.query_one(f"#chips-{self.key}", Static).update(
-                "  ·  ".join(chips))
+
+        if self.key == "codechef":
+            stars = stats.extra.get("stars") or 0
+            if stars:
+                self.query_one(f"#rank-{self.key}", Static).update(
+                    stars_text(stars))
+                self._show_chart(True, stars_text(stars))
+                chips.append(f"[dim]stars[/] {stars}\u2605")
+            else:
+                self.query_one(f"#rank-{self.key}", Static).update("[dim]—[/]")
+                self._show_chart(True, "[dim]no rating yet[/]")
         else:
-            self.query_one(f"#chips-{self.key}", Static).update("")
-        self.query_one(f"#spark-{self.key}", Sparkline).data = pts
+            self._show_chart(False)
+            self.query_one(f"#spark-{self.key}", Sparkline).data = pts
+
+        self.query_one(f"#chips-{self.key}", Static).update(
+            "  ·  ".join(chips) if chips else "")
 
     def _set(self, rating="", caption="", rank="", chips="", *, error: bool = False):
         self.query_one(f"#rating-{self.key}", Static).update(
@@ -122,6 +154,7 @@ class PlatformCard(Vertical, can_focus=True):
             f"[{style}]{rank}[/]")
         self.query_one(f"#chips-{self.key}", Static).update(chips)
         self.query_one(f"#spark-{self.key}", Sparkline).data = []
+        self._show_chart(False)
         if error:
             self.add_class("card-error")
 
