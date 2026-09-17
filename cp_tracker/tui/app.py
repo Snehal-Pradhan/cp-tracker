@@ -10,6 +10,34 @@ from ..network import refresh_contests, refresh_stats
 from .screens import Dashboard, PlatformScreen, SetupModal
 
 CSS = """
+$accent: #b8aa4a;
+$background: #0c0d0f;
+$surface: #121317;
+$panel: #171a20;
+$panel-lighten-1: #1e222b;
+$panel-darken-1: #0f1014;
+$boost: #1d2129;
+$text: #c9cdd4;
+$text-muted: #7f8691;
+$text-disabled: #51575f;
+$primary: #3d4552;
+$secondary: #262b33;
+$border: #2a2f38;
+$success: #5aa469;
+$warning: #c0a83f;
+$error: #e06161;
+$block-cursor-background: #2f353f;
+$block-cursor-foreground: #e6e9ee;
+$block-cursor-text-style: bold;
+$block-cursor-blurred-background: #23272f;
+$block-cursor-blurred-foreground: #c9cdd4;
+$block-hover-background: #23272f;
+$footer-background: #171a20;
+$footer-foreground: #7f8691;
+$footer-key-foreground: #c9cdd4;
+$footer-key-background: #2a2f38;
+$footer-description-foreground: #7f8691;
+
 Screen {
     background: $surface;
 }
@@ -54,22 +82,10 @@ Screen {
 
 .platform-card {
     height: auto;
-    border: round $border;
+    border: round #2a2f38;
     background: $panel;
     padding: 0 2;
     margin: 0 0 1 0;
-}
-
-.platform-card.plat-codeforces {
-    border: round #d4394b88;
-}
-
-.platform-card.plat-leetcode {
-    border: round #ffa11688;
-}
-
-.platform-card.plat-codechef {
-    border: round #58a83b88;
 }
 
 .platform-card:focus {
@@ -90,6 +106,8 @@ Screen {
     width: auto;
     height: 1;
     margin-right: 2;
+    background: #343b46;
+    color: #dfe3e8;
 }
 
 .pname {
@@ -132,10 +150,21 @@ Screen {
 
 .card-spark {
     height: 3;
+}
+
+.big-spark {
+    height: 6;
+}
+
+Sparkline > .sparkline--max-color {
     color: $accent;
 }
 
-.star-meter {
+Sparkline > .sparkline--min-color {
+    color: $accent 40%;
+}
+
+.cc-bar {
     height: 3;
     content-align: left middle;
     display: none;
@@ -191,7 +220,6 @@ Screen {
 
 .big-spark {
     height: 6;
-    color: $accent;
 }
 
 #plot {

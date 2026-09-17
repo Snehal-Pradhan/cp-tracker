@@ -14,28 +14,10 @@ from textual.widgets import (Button, DataTable, Footer, Header, Input,
 
 from .. import config
 from ..models import Contest, Store, UserStats
-from .format import (PLATFORM_COLORS, dur_mins, fmt_time, in_when)
-from .widgets import PlatformCard, StatTile, stars_text
+from .format import dur_mins, fmt_time, in_when
+from .widgets import PlatformCard, StatTile, stars_label
 
 PLATFORM_ORDER = ["codeforces", "leetcode", "codechef"]
-
-
-def rating_color(rating):
-    if rating is None:
-        return "default"
-    if rating >= 2400:
-        return "red"
-    if rating >= 2200:
-        return "orange"
-    if rating >= 1900:
-        return "magenta"
-    if rating >= 1600:
-        return "blue"
-    if rating >= 1400:
-        return "cyan"
-    if rating >= 1200:
-        return "green"
-    return "gray"
 
 
 class Dashboard(Screen):
@@ -122,8 +104,7 @@ class Dashboard(Screen):
                           "[dim]no upcoming contests[/]")
             return
         for c in upcoming[:15]:
-            color = PLATFORM_COLORS.get(c.platform, "default")
-            table.add_row(f"[{color}]{c.platform}[/]", in_when(c.start_time),
+            table.add_row(c.platform, in_when(c.start_time),
                           fmt_time(c.start_time), c.name)
 
     def action_quit(self):
@@ -156,14 +137,13 @@ class PlatformScreen(Screen):
         self.tiles: dict[str, StatTile] = {}
 
     def compose(self) -> ComposeResult:
-        color = PLATFORM_COLORS.get(self.label, "default")
         yield Header(show_clock=True)
         with VerticalScroll(id="detail"):
-            yield Static(f"[bold {color}]{self.label}[/]",
+            yield Static(f"[bold]{self.label}[/]",
                          classes="detail-title", id="detail-title")
             yield Label("", id="detail-sub")
             with Horizontal(id="tiles"):
-                self.tiles["rating"] = StatTile("Rating", accent=color)
+                self.tiles["rating"] = StatTile("Rating")
                 self.tiles["max"] = StatTile("Max / Highest")
                 self.tiles["rank"] = StatTile("Rank")
                 self.tiles["attended"] = StatTile("Contests")
@@ -197,9 +177,8 @@ class PlatformScreen(Screen):
         store: Store = self.app.store
         cfg = config.load_config()
         handle = cfg.get(self.key, "")
-        color = PLATFORM_COLORS.get(self.label, "default")
         self.query_one("#detail-title", Static).update(
-            f"[bold {color}]{self.label}[/]  [dim]@{handle}[/]")
+            f"[bold]{self.label}[/]  [dim]@{handle}[/]")
         stats = store.stat_for(self.key)
 
         if stats is None:
@@ -218,16 +197,15 @@ class PlatformScreen(Screen):
             f"{datetime.fromtimestamp(store.last_updated or 0):%H:%M:%S}[/]"
             if store.last_updated else "[dim]—[/]")
 
-        rc = rating_color(stats.rating)
         self.tiles["rating"].set_value(
-            f"[{rc}]{stats.rating}[/]" if stats.rating is not None else "—")
+            str(stats.rating) if stats.rating is not None else "—")
         self.tiles["max"].set_value(
             str(stats.max_rating) if stats.max_rating is not None else "—")
         rank = stats.rank or (f"#{stats.global_rank:,}"
                               if stats.global_rank else "—")
         if self.key == "codechef":
             stars = stats.extra.get("stars") or 0
-            rank = stars_text(stars) if stars else "—"
+            rank = stars_label(stars) if stars else "—"
         self.tiles["rank"].set_value(rank)
         self.tiles["attended"].set_value(
             str(stats.contests_attended) if stats.contests_attended
@@ -236,9 +214,9 @@ class PlatformScreen(Screen):
         extra_line = []
         if self.label == "LeetCode" and stats.solved:
             solve = stats.solved
-            extra_line.append(f"Solved: E[green]{solve.get('Easy', 0)}[/] "
-                              f"M[orange]{solve.get('Medium', 0)}[/] "
-                              f"H[red]{solve.get('Hard', 0)}[/] "
+            extra_line.append(f"[dim]Solved[/] E{solve.get('Easy', 0)} · "
+                              f"M{solve.get('Medium', 0)} · "
+                              f"H{solve.get('Hard', 0)} "
                               f"([b]{solve.get('All', 0)}[/] total)")
         if stats.extra.get("country"):
             extra_line.append(f"[dim]country[/] {stats.extra['country']}")

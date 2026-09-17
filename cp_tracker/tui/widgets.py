@@ -7,45 +7,26 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Sparkline, Static
 
 from ..models import UserStats
-from .format import PLATFORM_COLORS
 
 PLATFORM_ICONS = {"Codeforces": "CF", "LeetCode": "LC", "CodeChef": "CC"}
 
-PLATFORM_HEX = {
-    "Codeforces": "#d4394b",
-    "LeetCode": "#ffa116",
-    "CodeChef": "#58a83b",
-}
-
-RATING_COLORS = [
-    (2400, "#dc2626"),
-    (2200, "#ea580c"),
-    (1900, "#a855f7"),
-    (1600, "#3b82f6"),
-    (1400, "#06b6d4"),
-    (1200, "#22c55e"),
-]
-
-
-def rating_hex(rating):
-    if rating is None:
-        return "default"
-    for threshold, color in RATING_COLORS:
-        if rating >= threshold:
-            return color
-    return "#9ca3af"
-
-
-STAR_HEX = "#f5b301"
+ACCENT_HEX = "#b8aa4a"
+BAR_EMPTY_HEX = "#2a2f38"
 MAX_STARS = 7
 
 
-def stars_text(count: int | None) -> str:
-    """Render a CodeChef star meter: filled gold stars + dim empty slots."""
+def stars_label(count: int | None) -> str:
+    """Plain textual star level (e.g. '3 Star'), no glyphs."""
     count = int(count or 0)
-    total = max(count, MAX_STARS)
-    return (f"[bold {STAR_HEX}]" + "\u2605" * count + "[/]"
-            f"[dim]" + "\u2606" * (total - count) + "[/]")
+    return "—" if count <= 0 else f"{count} Star"
+
+
+def cc_progress_bar(count: int | None, width: int = 14) -> str:
+    """A plain coloured progress bar for the CodeChef card graph slot."""
+    count = int(count or 0)
+    filled = round(min(count, MAX_STARS) / MAX_STARS * width)
+    return (f"[{ACCENT_HEX}]" + "\u2588" * filled + "[/]"
+            f"[{BAR_EMPTY_HEX}]" + "\u2588" * (width - filled) + "[/]")
 
 
 class PlatformCard(Vertical, can_focus=True):
@@ -59,7 +40,6 @@ class PlatformCard(Vertical, can_focus=True):
         self.handle = handle
         self.stats = stats
         self.add_class("platform-card")
-        self.add_class(f"plat-{self.key}")
 
     def compose(self) -> ComposeResult:
         with Horizontal(classes="head-row"):
@@ -72,7 +52,7 @@ class PlatformCard(Vertical, can_focus=True):
                 yield Static("", classes="caption", id=f"cap-{self.key}")
                 yield Static("", classes="rank", id=f"rank-{self.key}")
         yield Sparkline([], classes="card-spark", id=f"spark-{self.key}")
-        yield Static("", classes="star-meter", id=f"starmeter-{self.key}")
+        yield Static("", classes="cc-bar", id=f"starmeter-{self.key}")
         yield Static("", classes="chips", id=f"chips-{self.key}")
 
     def _show_chart(self, use_meter: bool, meter_text: str = ""):
@@ -85,11 +65,10 @@ class PlatformCard(Vertical, can_focus=True):
 
     def render_content(self):
         stats = self.stats
-        hexc = PLATFORM_HEX.get(self.label, "#ffffff")
         icon = PLATFORM_ICONS[self.label]
 
         self.query_one(f"#badge-{self.key}", Static).update(
-            f"[bold on {hexc} #1e1e1e] {icon} [/]")
+            f"[bold]{icon}[/]")
         self.query_one(f"#pname-{self.key}", Static).update(
             f"[bold]{self.label}[/]")
         self.query_one(f"#phandle-{self.key}", Static).update(
@@ -107,15 +86,19 @@ class PlatformCard(Vertical, can_focus=True):
         pts = [p.rating for p in stats.history][-40:]
         rating = stats.rating
         if rating is not None:
-            rc = rating_hex(rating)
             self.query_one(f"#rating-{self.key}", Static).update(
-                f"[bold {rc}]{rating}[/]")
+                f"[bold]{rating}[/]")
         else:
             self.query_one(f"#rating-{self.key}", Static).update("[dim]unrated[/]")
 
         rank_txt = stats.rank or (
             f"#{stats.global_rank:,}" if stats.global_rank else "—")
-        self.query_one(f"#cap-{self.key}", Static).update("CURRENT RATING")
+        caption = "CURRENT RATING"
+        if self.key == "codechef":
+            stars = stats.extra.get("stars") or 0
+            rank_txt = stars_label(stars)
+            caption = "STAR LEVEL"
+        self.query_one(f"#cap-{self.key}", Static).update(caption)
         self.query_one(f"#rank-{self.key}", Static).update(f"{rank_txt}")
 
         chips = []
@@ -131,12 +114,8 @@ class PlatformCard(Vertical, can_focus=True):
         if self.key == "codechef":
             stars = stats.extra.get("stars") or 0
             if stars:
-                self.query_one(f"#rank-{self.key}", Static).update(
-                    stars_text(stars))
-                self._show_chart(True, stars_text(stars))
-                chips.append(f"[dim]stars[/] {stars}\u2605")
+                self._show_chart(True, cc_progress_bar(stars))
             else:
-                self.query_one(f"#rank-{self.key}", Static).update("[dim]—[/]")
                 self._show_chart(True, "[dim]no rating yet[/]")
         else:
             self._show_chart(False)

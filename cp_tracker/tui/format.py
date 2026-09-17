@@ -4,12 +4,6 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-PLATFORM_COLORS = {
-    "Codeforces": "red",
-    "LeetCode": "orange2",
-    "CodeChef": "green",
-}
-
 
 def local(dt: datetime) -> datetime:
     if dt.tzinfo is None:
