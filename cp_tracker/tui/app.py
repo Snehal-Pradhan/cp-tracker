@@ -95,7 +95,6 @@ Screen {
 
 .platform-card:focus {
     border: round $accent;
-    background: $boost;
 }
 
 .platform-card.card-error {
@@ -111,23 +110,20 @@ Screen {
     width: auto;
     height: 1;
     margin-right: 2;
-    background: #343b46;
-    color: #dfe3e8;
+    text-style: bold;
+    color: $text-disabled;
 }
 
 .plat-codeforces .badge {
-    background: #d4394b;
-    color: #ffffff;
+    color: #d4394b;
 }
 
 .plat-leetcode .badge {
-    background: #ffa116;
-    color: #1e1e1e;
+    color: #ffa116;
 }
 
 .plat-codechef .badge {
-    background: #58a83b;
-    color: #ffffff;
+    color: #58a83b;
 }
 
 .pname {
