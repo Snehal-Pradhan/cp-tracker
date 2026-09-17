@@ -14,7 +14,7 @@ from textual.widgets import (Button, DataTable, Footer, Header, Input,
 
 from .. import config
 from ..models import Contest, Store, UserStats
-from .format import dur_mins, fmt_time, in_when
+from .format import PLATFORM_COLORS, dur_mins, fmt_time, in_when
 from .widgets import PlatformCard, StatTile, stars_label
 
 PLATFORM_ORDER = ["codeforces", "leetcode", "codechef"]
@@ -104,7 +104,8 @@ class Dashboard(Screen):
                           "[dim]no upcoming contests[/]")
             return
         for c in upcoming[:15]:
-            table.add_row(c.platform, in_when(c.start_time),
+            color = PLATFORM_COLORS.get(c.platform, "default")
+            table.add_row(f"[{color}]{c.platform}[/]", in_when(c.start_time),
                           fmt_time(c.start_time), c.name)
 
     def action_quit(self):
@@ -137,9 +138,10 @@ class PlatformScreen(Screen):
         self.tiles: dict[str, StatTile] = {}
 
     def compose(self) -> ComposeResult:
+        color = PLATFORM_COLORS.get(self.label, "default")
         yield Header(show_clock=True)
         with VerticalScroll(id="detail"):
-            yield Static(f"[bold]{self.label}[/]",
+            yield Static(f"[bold {color}]{self.label}[/]",
                          classes="detail-title", id="detail-title")
             yield Label("", id="detail-sub")
             with Horizontal(id="tiles"):
@@ -177,8 +179,9 @@ class PlatformScreen(Screen):
         store: Store = self.app.store
         cfg = config.load_config()
         handle = cfg.get(self.key, "")
+        color = PLATFORM_COLORS.get(self.label, "default")
         self.query_one("#detail-title", Static).update(
-            f"[bold]{self.label}[/]  [dim]@{handle}[/]")
+            f"[bold {color}]{self.label}[/]  [dim]@{handle}[/]")
         stats = store.stat_for(self.key)
 
         if stats is None:

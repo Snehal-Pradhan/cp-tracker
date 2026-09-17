@@ -10,23 +10,11 @@ from ..models import UserStats
 
 PLATFORM_ICONS = {"Codeforces": "CF", "LeetCode": "LC", "CodeChef": "CC"}
 
-ACCENT_HEX = "#b8aa4a"
-BAR_EMPTY_HEX = "#2a2f38"
-MAX_STARS = 7
-
 
 def stars_label(count: int | None) -> str:
     """Plain textual star level (e.g. '3 Star'), no glyphs."""
     count = int(count or 0)
     return "—" if count <= 0 else f"{count} Star"
-
-
-def cc_progress_bar(count: int | None, width: int = 14) -> str:
-    """A plain coloured progress bar for the CodeChef card graph slot."""
-    count = int(count or 0)
-    filled = round(min(count, MAX_STARS) / MAX_STARS * width)
-    return (f"[{ACCENT_HEX}]" + "\u2588" * filled + "[/]"
-            f"[{BAR_EMPTY_HEX}]" + "\u2588" * (width - filled) + "[/]")
 
 
 class PlatformCard(Vertical, can_focus=True):
@@ -40,6 +28,7 @@ class PlatformCard(Vertical, can_focus=True):
         self.handle = handle
         self.stats = stats
         self.add_class("platform-card")
+        self.add_class(f"plat-{self.key}")
 
     def compose(self) -> ComposeResult:
         with Horizontal(classes="head-row"):
@@ -52,16 +41,16 @@ class PlatformCard(Vertical, can_focus=True):
                 yield Static("", classes="caption", id=f"cap-{self.key}")
                 yield Static("", classes="rank", id=f"rank-{self.key}")
         yield Sparkline([], classes="card-spark", id=f"spark-{self.key}")
-        yield Static("", classes="cc-bar", id=f"starmeter-{self.key}")
         yield Static("", classes="chips", id=f"chips-{self.key}")
 
-    def _show_chart(self, use_meter: bool, meter_text: str = ""):
+    def _set_chart(self, pts):
         spark = self.query_one(f"#spark-{self.key}", Sparkline)
-        meter = self.query_one(f"#starmeter-{self.key}", Static)
-        spark.display = not use_meter
-        meter.display = use_meter
-        if use_meter:
-            meter.update(meter_text)
+        if pts is None:
+            spark.display = False
+            spark.data = []
+        else:
+            spark.display = True
+            spark.data = pts
 
     def render_content(self):
         stats = self.stats
@@ -112,14 +101,9 @@ class PlatformCard(Vertical, can_focus=True):
             chips.append(f"[dim]top[/] {stats.top_percentage:g}%")
 
         if self.key == "codechef":
-            stars = stats.extra.get("stars") or 0
-            if stars:
-                self._show_chart(True, cc_progress_bar(stars))
-            else:
-                self._show_chart(True, "[dim]no rating yet[/]")
+            self._set_chart(None)
         else:
-            self._show_chart(False)
-            self.query_one(f"#spark-{self.key}", Sparkline).data = pts
+            self._set_chart(pts)
 
         self.query_one(f"#chips-{self.key}", Static).update(
             "  ·  ".join(chips) if chips else "")
@@ -132,8 +116,7 @@ class PlatformCard(Vertical, can_focus=True):
         self.query_one(f"#rank-{self.key}", Static).update(
             f"[{style}]{rank}[/]")
         self.query_one(f"#chips-{self.key}", Static).update(chips)
-        self.query_one(f"#spark-{self.key}", Sparkline).data = []
-        self._show_chart(False)
+        self._set_chart(None if self.key == "codechef" else [])
         if error:
             self.add_class("card-error")
 

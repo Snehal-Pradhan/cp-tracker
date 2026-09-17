@@ -42,6 +42,11 @@ Screen {
     background: $surface;
 }
 
+* {
+    scrollbar-size-vertical: 1;
+    scrollbar-size-horizontal: 1;
+}
+
 #body {
     height: 1fr;
 }
@@ -110,6 +115,21 @@ Screen {
     color: #dfe3e8;
 }
 
+.plat-codeforces .badge {
+    background: #d4394b;
+    color: #ffffff;
+}
+
+.plat-leetcode .badge {
+    background: #ffa116;
+    color: #1e1e1e;
+}
+
+.plat-codechef .badge {
+    background: #58a83b;
+    color: #ffffff;
+}
+
 .pname {
     width: 1fr;
     height: 1;
@@ -157,17 +177,11 @@ Screen {
 }
 
 Sparkline > .sparkline--max-color {
-    color: $accent;
+    color: #0178d4;
 }
 
 Sparkline > .sparkline--min-color {
-    color: $accent 40%;
-}
-
-.cc-bar {
-    height: 3;
-    content-align: left middle;
-    display: none;
+    color: #0178d4 40%;
 }
 
 .chips {
@@ -281,6 +295,7 @@ class CPApp(App):
     TITLE = "CP Tracker"
     SUB_TITLE = "your competitive programming journey"
     CSS = CSS
+    ENABLE_COMMAND_PALETTE = False
 
     def __init__(self, **kw):
         super().__init__(**kw)
