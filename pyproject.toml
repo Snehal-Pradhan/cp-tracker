@@ -43,10 +43,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/snehalpradhan23/cp-tracker"
-Repository = "https://github.com/snehalpradhan23/cp-tracker"
-Documentation = "https://github.com/snehalpradhan23/cp-tracker"
-"Bug Tracker" = "https://github.com/snehalpradhan23/cp-tracker/issues"
+Homepage = "https://github.com/Snehal-Pradhan/cp-tracker"
+Repository = "https://github.com/Snehal-Pradhan/cp-tracker"
+Documentation = "https://github.com/Snehal-Pradhan/cp-tracker"
+"Bug Tracker" = "https://github.com/Snehal-Pradhan/cp-tracker/issues"
 
 [project.scripts]
 cp-tracker = "cp_tracker.tui.app:main"

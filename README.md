@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![CI](https://github.com/snehalpradhan23/cp-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/snehalpradhan23/cp-tracker/actions/workflows/ci.yml)
+[![CI](https://github.com/Snehal-Pradhan/cp-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/Snehal-Pradhan/cp-tracker/actions/workflows/ci.yml)
 
 A terminal UI dashboard that tracks your competitive programming journey across
 **Codeforces**, **LeetCode** and **CodeChef**.
@@ -34,7 +34,7 @@ Requires Python 3.9+ (works on macOS, Linux and Windows terminals).
 ### From source
 
 ```bash
-git clone https://github.com/snehalpradhan23/cp-tracker.git
+git clone https://github.com/Snehal-Pradhan/cp-tracker.git
 cd cp-tracker
 python3 -m pip install -e .
 ```
@@ -42,7 +42,7 @@ python3 -m pip install -e .
 ### From the repo (no install)
 
 ```bash
-git clone https://github.com/snehalpradhan23/cp-tracker.git
+git clone https://github.com/Snehal-Pradhan/cp-tracker.git
 cd cp-tracker
 python3 -m pip install -r requirements.txt
 ```
@@ -102,7 +102,7 @@ It uses mocked network data, so no internet connection is needed.
 ## Contributing
 
 Bug reports, feature requests and pull requests are welcome. Please open an
-[issue](https://github.com/snehalpradhan23/cp-tracker/issues) or a PR; keep
+[issue](https://github.com/Snehal-Pradhan/cp-tracker/issues) or a PR; keep
 changes focused and make sure `python3 smoke_test.py` passes.
 
 ## License
