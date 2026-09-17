@@ -53,11 +53,23 @@ Screen {
 }
 
 .platform-card {
-    height: 9;
+    height: auto;
     border: round $border;
     background: $panel;
-    padding: 0 1;
+    padding: 0 2;
     margin: 0 0 1 0;
+}
+
+.platform-card.plat-codeforces {
+    border: round #d4394b88;
+}
+
+.platform-card.plat-leetcode {
+    border: round #ffa11688;
+}
+
+.platform-card.plat-codechef {
+    border: round #58a83b88;
 }
 
 .platform-card:focus {
@@ -65,30 +77,68 @@ Screen {
     background: $boost;
 }
 
-.card-title {
+.platform-card.card-error {
+    border: round $error;
+}
+
+.head-row {
     height: 1;
+    align-vertical: middle;
+}
+
+.badge {
+    width: auto;
+    height: 1;
+    margin-right: 2;
+}
+
+.pname {
+    width: 1fr;
+    height: 1;
+}
+
+.phandle {
+    width: auto;
+    height: 1;
+    color: $text-muted;
+}
+
+.body-row {
+    height: 4;
     margin-top: 1;
 }
 
-.card-rating {
-    height: 2;
-    margin: 0 0 0 1;
+.rating {
+    width: 1fr;
+    height: 4;
     content-align: left middle;
 }
 
-.card-rating Text {
+.side {
+    width: 1fr;
+    height: 4;
+    align: left middle;
+}
+
+.caption {
+    height: 1;
+    color: $text-muted;
+}
+
+.rank {
+    height: 2;
     text-style: bold;
-    color: $accent;
 }
 
 .card-spark {
     height: 3;
-    color: $success;
+    color: $accent;
 }
 
-.card-meta {
+.chips {
     height: 1;
     color: $text-muted;
+    margin-bottom: 1;
 }
 
 /* ---- detail screen ---- */
