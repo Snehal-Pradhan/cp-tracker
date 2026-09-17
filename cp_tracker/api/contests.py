@@ -10,7 +10,7 @@ def fetch_all_contests() -> list:
                   codechef.upcoming_contests):
         try:
             contests.extend(fetch())
-        except Exception:
+        except Exception:  # noqa: BLE001, S112 - one site failing must not drop the rest
             continue
     contests.sort(key=lambda c: c.start_time)
     return contests

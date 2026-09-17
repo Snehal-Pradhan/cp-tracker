@@ -59,7 +59,7 @@ def _fetch_one(key: str, handle: str) -> UserStats:
         if stale:
             try:
                 return UserStats.from_dict(stale)
-            except Exception:  # noqa: BLE001
+            except Exception:  # noqa: BLE001, S110 - corrupted cache: fall through
                 pass
         return UserStats(platform=PLATFORM_TITLES[key], handle=handle,
                          ok=False, error=str(exc))

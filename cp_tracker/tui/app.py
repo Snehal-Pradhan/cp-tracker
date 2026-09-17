@@ -338,7 +338,7 @@ class CPApp(App):
 
     def _apply_to_current(self):
         screen = self.screen
-        if isinstance(screen, Dashboard) or isinstance(screen, PlatformScreen):
+        if isinstance(screen, (Dashboard, PlatformScreen)):
             screen.apply_store()
 
 

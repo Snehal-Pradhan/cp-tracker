@@ -2,8 +2,8 @@
 
 from datetime import datetime, timezone
 
-from .common import http_json, FetchError
 from ..models import Contest, ContestResult, RatingPoint, UserStats
+from .common import FetchError, http_json
 
 API = "https://codeforces.com/api"
 

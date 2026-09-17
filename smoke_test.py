@@ -4,8 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, ".")
 
-import cp_tracker.network as network
-from cp_tracker import config
+from cp_tracker import config, network
 from cp_tracker.models import Contest, ContestResult, RatingPoint, UserStats
 from cp_tracker.tui.app import CPApp
 from cp_tracker.tui.screens import Dashboard, PlatformScreen, SetupModal

@@ -2,15 +2,24 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import ClassVar
 
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen, Screen
-from textual.widgets import (Button, DataTable, Footer, Header, Input,
-                             Label, Sparkline, Static)
+from textual.widgets import (
+    Button,
+    DataTable,
+    Footer,
+    Header,
+    Input,
+    Label,
+    Sparkline,
+    Static,
+)
 
 from .. import config
 from ..models import Contest, Store, UserStats
@@ -21,7 +30,7 @@ PLATFORM_ORDER = ["codeforces", "leetcode", "codechef"]
 
 
 class Dashboard(Screen):
-    BINDINGS = [
+    BINDINGS: ClassVar[list[Binding]] = [
         Binding("q", "quit", "Quit"),
         Binding("r", "refresh", "Refresh"),
         Binding("c", "configure", "Config"),
@@ -63,14 +72,14 @@ class Dashboard(Screen):
             if cached:
                 try:
                     self.app.store.stats[key] = UserStats.from_dict(cached)
-                except Exception:  # noqa: BLE001
+                except Exception:  # noqa: BLE001, S110 - corrupt cache entry: ignore
                     pass
         cached_contests = config.load_cache().get("contests", {}).get("data")
         if cached_contests:
             try:
                 self.app.store.contests = [Contest.from_dict(d)
                                            for d in cached_contests]
-            except Exception:  # noqa: BLE001
+            except Exception:  # noqa: BLE001, S110 - corrupt cache block: ignore
                 pass
 
         self.apply_store()
@@ -89,7 +98,7 @@ class Dashboard(Screen):
         self._render_contests(store.contests)
         if store.last_updated:
             label = (f"[dim]updated[/] "
-                     f"{datetime.fromtimestamp(store.last_updated):%H:%M:%S}")
+                     f"{datetime.fromtimestamp(store.last_updated, tz=timezone.utc):%H:%M:%S}")
             self.query_one("#status", Static).update(label)
         else:
             self.query_one("#status", Static).update("[dim]refreshing…[/]")
@@ -97,7 +106,7 @@ class Dashboard(Screen):
     def _render_contests(self, contests: list[Contest]):
         table = self.query_one("#contest-table", DataTable)
         table.clear()
-        now = datetime.now().timestamp()
+        now = datetime.now(timezone.utc).timestamp()
         upcoming = [c for c in contests if c.start_time.timestamp() > now]
         if not upcoming:
             table.add_row("[dim]—[/]", "[dim]—[/]", "[dim]—[/]",
@@ -125,7 +134,7 @@ class Dashboard(Screen):
 
 
 class PlatformScreen(Screen):
-    BINDINGS = [
+    BINDINGS: ClassVar[list[Binding]] = [
         Binding("q", "back", "Back"),
         Binding("escape", "back", "Back"),
         Binding("r", "refresh", "Refresh"),
@@ -149,9 +158,8 @@ class PlatformScreen(Screen):
                 self.tiles["max"] = StatTile("Max / Highest")
                 self.tiles["rank"] = StatTile("Rank")
                 self.tiles["attended"] = StatTile("Contests")
-                for t in (self.tiles["rating"], self.tiles["max"],
-                          self.tiles["rank"], self.tiles["attended"]):
-                    yield t
+                yield from (self.tiles["rating"], self.tiles["max"],
+                            self.tiles["rank"], self.tiles["attended"])
             yield Static("", id="extra-line", classes="extra-line")
             yield Static("[b]Rating trend[/]", classes="section-title")
             with Vertical(id="plot"):
@@ -191,13 +199,13 @@ class PlatformScreen(Screen):
         if not stats.ok:
             self.query_one("#detail-sub", Label).update(
                 f"[red]{stats.error}[/]")
-            for name, t in self.tiles.items():
+            for t in self.tiles.values():
                 t.set_value("—")
             return
 
         self.query_one("#detail-sub", Label).update(
             f"[dim]last updated "
-            f"{datetime.fromtimestamp(store.last_updated or 0):%H:%M:%S}[/]"
+            f"{datetime.fromtimestamp(store.last_updated or 0, tz=timezone.utc):%H:%M:%S}[/]"
             if store.last_updated else "[dim]—[/]")
 
         self.tiles["rating"].set_value(
@@ -261,7 +269,7 @@ class PlatformScreen(Screen):
         store: Store = self.app.store
         table = self.query_one("#up-table", DataTable)
         table.clear()
-        now = datetime.now().timestamp()
+        now = datetime.now(timezone.utc).timestamp()
         mine = [c for c in store.contests
                 if c.platform == self.label and c.start_time.timestamp() > now]
         if not mine:
@@ -280,7 +288,7 @@ class PlatformScreen(Screen):
 
 
 class SetupModal(ModalScreen):
-    BINDINGS = [Binding("escape", "cancel", "Cancel")]
+    BINDINGS: ClassVar[list[Binding]] = [Binding("escape", "cancel", "Cancel")]
 
     def __init__(self, focus_key: str | None = None, **kw):
         super().__init__(**kw)

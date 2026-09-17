@@ -5,8 +5,8 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone
 
-from .common import http_json, http_get, FetchError
 from ..models import Contest, UserStats
+from .common import FetchError, http_get, http_json
 
 PROFILE = "https://www.codechef.com/users/{handle}"
 
@@ -60,7 +60,7 @@ def upcoming_contests() -> list[Contest]:
 
 
 def _text_of(html: str, pattern: str, group: int = 1):
-    m = re.search(pattern, html, re.S)
+    m = re.search(pattern, html, re.DOTALL)
     if not m:
         return None
     return re.sub(r"\s+", " ", m.group(group)).strip()
@@ -71,7 +71,7 @@ def _rank_listed(html: str, label: str):
     if i < 0:
         return None
     window = html[max(0, i - 400):i]
-    m = re.search(r"<strong>\s*([^<]{1,40}?)\s*</strong>", window, re.S)
+    m = re.search(r"<strong>\s*([^<]{1,40}?)\s*</strong>", window, re.DOTALL)
     if not m:
         return None
     val = m.group(1).strip()

@@ -2,8 +2,8 @@
 
 from datetime import datetime, timezone
 
-from .common import http_post_json, FetchError
 from ..models import Contest, ContestResult, RatingPoint, UserStats
+from .common import FetchError, http_post_json
 
 GQL = "https://leetcode.com/graphql"
 CONTEST_URL = "https://leetcode.com/contest/{slug}"
@@ -84,7 +84,7 @@ def user_stats(handle: str) -> UserStats:
         contest = h.get("contest") or {}
         t = datetime.fromtimestamp(int(contest.get("startTime", 0)),
                                    tz=timezone.utc)
-        rating = int(round((h.get("rating") or 0)))
+        rating = round(h.get("rating") or 0)
         history.append(RatingPoint(t, rating))
         delta = rating - last_rating if last_rating is not None else 0
         results.append(ContestResult(t, contest.get("title", ""),
@@ -100,7 +100,7 @@ def user_stats(handle: str) -> UserStats:
         platform="LeetCode",
         handle=handle,
         ok=True,
-        rating=int(round(rating)) if rating else None,
+        rating=round(rating) if rating else None,
         rank=(f"Top {ranking.get('topPercentage')}%" if ranking.get("topPercentage") else None),
         global_rank=ranking.get("globalRanking"),
         top_percentage=ranking.get("topPercentage"),
